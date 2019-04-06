@@ -252,9 +252,9 @@ Click on `cast` again in the environment; much better. We'd still want to clear 
 The real power of web scraping lies in its capacity for regularization. Websites often use individual webpages as part of a broader organizational strucutre: one (newsprint) page per (web) page in the Virginia Chronicle database or one movie per page in IMDB. Knowing that the HTML generating each of these pages is consistent means that the same code can be reused. It might not be very time efficient to write all this code just for a single webpage, but imagine that you wanted to scrape information from one hundred pages - one hundred newsprint pages or one hundred movies. Crawling is when you automate the scraping process across a series of webpages.
 
 But it gets better. Individual webpages are not only structurally consistent: their addresses are often regularized as well. For example, the first Virginia Chronicle address we looked at contains a lot of valuable information.
-```
+
 https://virginiachronicle.com/?a=d&d=CC19021008.1.1&dliv=none&st=1
-```
+
 The "CC" here is an identifier for the newspaper, the Clarke Courier; the long number that follows is actually a date, 08 October 1902. The number after the second period is the page number in the issue for that date. 
 
 If we could add one to the page number up to four (the total issue length for the Clarke Courier) and generate a new address each time, we could have the four addresses for the four pages in that issue. If we could do that for every Wednesday of the year, the day on which the newspaper was published, we would have a couple hundred links for every page printed that year; if we could do that for each year that the paper published--.
@@ -301,9 +301,9 @@ for (j in 1:52) {
 Type `all_urls` into the console and check it out: in just a second, fewer than ten lines of code gave us all 208 web addresses we want to scrape.
 
 Of course, addresses are often not so mathematically convenient. Before executing a crawl, let's turn to our second example. The IMDB address we've looked at is delightfully simple, but not as rich in literal information:
-```
+
 https://www.imdb.com/title/tt0104940/
-```
+
 If you play around with this number a few times, you'll notice that the number used in this address is a unique identifier for each movie and that the movies are generally arranged alphabetically by year of release. If we had a list of the web addresses we wanted, we couple make a `for` loop no problem. But how to get those addresses?
 
 Like before, we could try to take advantage of what information is still included in the addresses. If you wanted to scrape all the webpages for movies released within 1990 and 1993, for example, you would simply need to find the first ID number for 1990 and the last ID for 1993; then write a simple `for` loop to `paste` together each address where the ID number is the initial ID number + the loop control variable.
@@ -324,19 +324,19 @@ Great; we now have a vector of links that we can crawl.
 ## Crawling
 
 But what if the directory is spread out over multiple pages? IMDB, for example, can generate lists of all the movies tagged with a particular genre or combination of genres, which greatly exceeds what can be managed on a single page:
-```
+
 https://www.imdb.com/search/title?genres=comedy&explore=title_type,genres&title_type=movie&ref_=adv_explore_rhs
-```
+
 If we want information about all these movies, we're going to have to scrape multiple webpages. That means we're going to have to run a preliminary web crawl in order to get the information we need for our actual crawl!
 
 As with before, let's see if we can identify regular patterns in the addresses. Clicking the "next" button on this page generates the next 50 results, #51-100. The address looks like this:
-```
+
 https://www.imdb.com/search/title?title_type=movie&genres=comedy&start=51&explore=title_type,genres&ref_=adv_nxt
-```
+
 The differences between these two addresses are mostly just shuffling around component parts (`genres=comedy` shows up second in the second address rather than first, as in the first address). The major difference is that the second address includes `&start=51`. It stands to reason that we could also generate the first webpage by simply editing the second address so that `&start=1` instead.
-```
+
 https://www.imdb.com/search/title?title_type=movie&genres=comedy&start=1&explore=title_type,genres&ref_=adv_nxt
-```
+
 This will allow us to regularize all the addresses, changing only that one number each time. 
 
 So we just need a `for` loop that changes one number in the web address each time, scrapes the webpage listing 50 movies tagged as comedy, and keeps only the links to those movies' webpages. 

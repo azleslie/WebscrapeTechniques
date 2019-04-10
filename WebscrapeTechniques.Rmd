@@ -30,7 +30,7 @@ library("stringr")
 library("rvest")
 ```
 
-Welcome to this introductory workshop on techniques for web scraping and crawling! 
+Welcome to this introductory workshop on techniques for web scraping! 
 
 Obtaining and wrangling data is often one of the most difficult parts of a digital humanities project. Even though there is an ever-growing wealth of data online, much of it isn't in tidy, single-file downloads. Instead, most is strewn across multiple webpages and structured in ways that, while visually intuitive, aren't amenable to our (or our computer's) formatting needs. This is where web scraping comes in.
 
@@ -251,9 +251,9 @@ Click on `cast` again in the environment; much better. We'd still want to clear 
 
 There's a lot more we could do to prepare this data frame for future analysis: rename the blank columns, change the column names, etc. This, however, goes into another topic; if you're interested in learning more, check out my [Data 101 workshop](https://github.com/azleslie/Data101).
 
-## Preparing to Crawl
+## Preparing to Scrape Multiple Pages
 
-The real power of web scraping lies in its capacity for regularization. Websites often use individual webpages as part of a broader organizational strucutre: one (newsprint) page per (web) page in the Virginia Chronicle database or one movie per page in IMDB. Knowing that the HTML generating each of these pages is consistent means that the same scraping code can be reused. It might not be very time efficient to write all this code just for a single webpage, but imagine that you wanted to scrape information from one hundred pages. Crawling is when you automate the scraping process across a series of webpages.
+The real power of web scraping lies in its capacity for regularization. Websites often use individual webpages as part of a broader organizational strucutre: one (newsprint) page per (web) page in the Virginia Chronicle database or one movie per page in IMDB. Knowing that the HTML generating each of these pages is consistent means that the same scraping code can be reused. It might not be very time efficient to write all this code just for a single webpage, but imagine that you wanted to scrape information from one hundred pages. Ultimately, the scraping process should be automated across a series of webpages.
 
 But it gets better. Individual webpages are not only structurally consistent: their addresses are often regularized as well. For example, the first Virginia Chronicle address we looked at contains a lot of valuable information.
 
@@ -304,7 +304,7 @@ for (j in 1:52) {
 
 Type `all_urls` into the console and check it out: in just a second, fewer than ten lines of code gave us a vector of all 208 web addresses we want to scrape.
 
-Of course, addresses are often not so mathematically convenient. Before executing a crawl on a vector of addresses, let's turn to our second example. The IMDB address we've looked at is delightfully simple, but not as rich in literal information:
+Of course, addresses are often not so mathematically convenient. Before executing a scrape on a vector of addresses, let's turn to our second example. The IMDB address we've looked at is delightfully simple, but not as rich in literal information:
 
 https://www.imdb.com/title/tt0104940/
 
@@ -323,15 +323,15 @@ pages <- directory %>%
   html_attr("href")
 ```
 
-Great; just like that, we now have a vector of links that we can crawl.
+Great; just like that, we now have a vector of links that we can scrape.
 
-## Crawling
+## Automating a Scrape
 
 But wait: one more contingency! What if the directory is spread out over multiple pages? This is very common. IMDB, for example, can generate lists of all the movies tagged with a particular genre or combination of genres, which greatly exceeds what can be managed on a single page:
 
 https://www.imdb.com/search/title?genres=comedy&explore=title_type,genres&title_type=movie&ref_=adv_explore_rhs
 
-If we want information about all the movies in this list, we're going to have to scrape the links off of multiple webpages. That means we're going to have to run a preliminary web crawl in order to get the information we need for our actual crawl!
+If we want information about all the movies in this list, we're going to have to scrape the links off of multiple webpages. That means we're going to have to run a preliminary automated scrape in order to get the information we need for our actual automated scrape!
 
 As with before, let's see if we can identify regular patterns in the addresses. Clicking the "next" button on this page generates the next 50 results, #51-100. The address looks like this:
 
@@ -351,7 +351,7 @@ There's just one thing we'll have to change from our usual scraping code. The te
 ```
 <a href="https://google.com">Google</a>
 ```
-`html_text` would return only the name of each movie (which is what the link looks like to us); `html_attr` will give us the attribute, the address itself. Along with `html_table`, which we've already used, these constitute the three main functions for converting HTML in the `rvest` package we've been relying on. With these two changes (and re-initializing our results vector), we're ready to go with our first basic crawl.
+`html_text` would return only the name of each movie (which is what the link looks like to us); `html_attr` will give us the attribute, the address itself. Along with `html_table`, which we've already used, these constitute the three main functions for converting HTML in the `rvest` package we've been relying on. With these two changes (and re-initializing our results vector), we're ready to go with our first basic automated scrape.
 ```{r}
 all_urls <- c()
 
@@ -368,7 +368,7 @@ for (j in 1:50) {
 
 This will take about a minute to run. (Now, these pages are quite information-rich: they contain names, ratings, major actors, duration, additional genres, and more for each movie - by clicking "US Box Office" we can even add that information too. But for the purposes of illustration, we'll pretend otherwise.)
 
-Once the loop completes, check what the results look like by indexing just the first ten elements of `all_urls` in the console. In total, the vector contains 2500 elements: the 50 addresses scraped from each of the 50 pages we've crawled.
+Once the loop completes, check what the results look like by indexing just the first ten elements of `all_urls` in the console. In total, the vector contains 2500 elements: the 50 addresses scraped from each of the 50 pages we've scraped.
 
 Well, not quite. These aren't complete addresses yet: IMDB has left off the "imdb.com" at the beginning of each because it knows they're in the same part of the same larger website. This too is common. So we'll need to `paste` that extra information on to the front of each element in `all_urls` before we scrape. Each of these addresses is the webpage for a single movie. We've already spent some time looking at one of these movie pages, so let's scrape something we're already familiar with: the single line of metadata found underneath each title at the top of the page.
 ```{r}
@@ -438,9 +438,9 @@ for (j in 1:30) {
 }
 ```
 
-Additional scrapes could be added in the same manner.[^6] And with that, we've gone from little to no knowledge about HTML to a fairly robust web crawl!
+Additional scrapes could be added in the same manner.[^6] And with that, we've gone from little to no knowledge about HTML to a fairly robust web scrape!
 
-## Tips for Scraping and Crawling
+## Tips for Scraping
 
 To conclude, let's review and distill some of strategies that we've deployed over the course of the workshop.
 
@@ -477,4 +477,4 @@ Thanks for participating!
 
 [^5]:This is necessary because loops often break when they can't execute every step they've been told to. If a programmer is uncertain whether all iterations of a loop will find what it expects, they'll include an `if` statement.
 
-[^6]:Scraping HTML tables as part of a crawl involves an extra step. In this particular case, I would probably create a second data frame just for the cast data from all the movies. Before using `rbind` within each iteration of the loop, however, it would be necessary to add a new column to the cast data frame that simply contains the name of the movie. This way, in the resulting data frame including all the casts from all the movies, we would still know which rows belonged to which movies. It would also allow us to merge the cast data frame with the metadata data frame with the `inner_join` function.
+[^6]:Scraping HTML tables as part of an automated scrape involves an extra step. In this particular case, I would probably create a second data frame just for the cast data from all the movies. Before using `rbind` within each iteration of the loop, however, it would be necessary to add a new column to the cast data frame that simply contains the name of the movie. This way, in the resulting data frame including all the casts from all the movies, we would still know which rows belonged to which movies. It would also allow us to merge the cast data frame with the metadata data frame with the `inner_join` function.

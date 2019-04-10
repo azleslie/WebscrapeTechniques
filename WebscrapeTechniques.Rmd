@@ -24,10 +24,14 @@ if (!(require(stringr))) {
 if (!(require(rvest))) {
   install.packages("rvest", repos = "http://cran.us.r-project.org")
 }
+if (!(require(knitr))) {
+  install.packages("knitr", repos = "http://cran.us.r-project.org")
+}
 library("dplyr")
 library("tidyr")
 library("stringr")
 library("rvest")
+library("knitr")
 ```
 
 Welcome to this introductory workshop on techniques for web scraping! 
@@ -120,6 +124,10 @@ Even though you could get pretty good at guessing some of the tags that went int
 
 Conveniently, several browsers allow us to see behind the curtain. To do this in the Google Chrome browser, right-click anywhere on the webpage (or, on a Mac, control+click) and select "View Page Source." This opens a new tab in which you'll be able to see the HTML document that generates the webpage.
 
+```{r, echo=FALSE, out.width="70%"}
+include_graphics("images/source_sample.png")
+```
+
 There's a fair bit going on here, but scrolling through you'll be able to make out the text of the webpage and even recognize several of the tags. But it would take some time to get familiar enough with this webpage to come up with the specific CSS selector for identifying a particular element and nothing else: after all, you'll notice that most HTML tags are used many times for many different parts of a webpage.
 
 Luckily, because HTML and CSS code is so regular and hierarchically structured, there are tools to help with this. We'll use a tool called [SelectorGadget](https://selectorgadget.com/), a Chrome browser extension that helps identify HTML elements simply by clicking on them on the webpage itself. Follow this link and click "Just install the Chrome extension"; it'll only take a second.
@@ -128,11 +136,23 @@ Go back to our sample page and hit refresh. In the upper-right portion of the br
 
 Try selecting just the line that reads "Clarke Courier, Volume 34, Number 32, 8 October 1902 — Page 1." This highlights the selection green, and the SelectorGadget window at the bottom of the screen will now list "h1": the highlighted selection is enclosed in an `<h1>` HTML tag and thus the CSS selector necessary to refer to it is simply `h1`. But are there any other `<h1>` tags that would get pulled in with this one? To double-check simply scroll the page looking for any other highlighted section; nothing this time, so we're safe.
 
+```{r, echo=FALSE, out.width="70%"}
+include_graphics("images/selection_sample1.png")
+```
+
 Now select the first paragraph outside the grey notice box. The SelectorGadget window at the bottom of the screen tells us that the appropriate CSS selector for this content is `p`. But there is a lot of other content highlighted yellow: this text is all contained within `<p>` HTML tags as well, which means using the `p` selector would scrape all of it.
 
 Clicking a yellow-highlighted section will exclude it, turning its highlighted color to red and un-highlighting all similar content. Do this for any one of the paragraphs in the grey notice box. SelectorGadget will then try to guess what you want based on the initial pick of what to include and this subsequent pick of what to exclude: `#ocrdisclaimer+ p`, or the content within the first `<p>` tag after the content tagged with `id=ocrdisclaimer`.
 
+```{r, echo=FALSE, out.width="70%"}
+include_graphics("images/selection_sample2.png")
+```
+
 But we want all of the newsprint text, not just the first paragraph. So maneuver the cursor over the second newsprint paragraph and select it. Selecting additional un-highlighted content will highlight it green, including it in the selection too. There should now be: one red selection, two green selections, and a number of yellow selections. The SelectorGadget's suggestion, `.widthrestrictiondefault > p`, will include, as always, everything in green or yellow.[^1] 
+
+```{r, echo=FALSE, out.width="70%"}
+include_graphics("images/selection_sample3.png")
+```
 
 ## Scraping
 

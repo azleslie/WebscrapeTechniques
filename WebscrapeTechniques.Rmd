@@ -296,7 +296,7 @@ Now for the loop itself. Since we know that there are 52 weeks in a year and 4 p
 I've added lines of running commentary here, using pound signs (`#`) to designate that they aren't code, to help explain what's happening as it happens.
 ```{r}
 for (j in 1:52) {
-# for each week of the year, 56 times, we're going to...
+# for each week of the year, 52 times, we're going to...
   
   date <- (as.Date("1902-01-01") + (j-1)*7)
 # take our start date, format it as a date, and add 7 days for each week after the first..
@@ -322,19 +322,25 @@ for (j in 1:52) {
 }
 ```
 
-Type `all_urls` into the console and check it out: in just a second, fewer than ten lines of code gave us a vector of all 208 web addresses we want to scrape.
+Type `all_urls` into the console and check it out: in just a second, fewer than ten lines of code gave us a vector of all 208 web addresses we want to scrape. In order to scrape content from each of these addresses, from here we would create another `for` loop containing our scraping code.
 
-Of course, addresses are often not so mathematically convenient. Before executing a scrape on a vector of addresses, let's turn to our second example. The IMDB address we've looked at is delightfully simple, but not as rich in literal information:
+But addresses are often not so mathematically convenient. So before executing a scrape on a vector of addresses, let's turn to our second example. The IMDB address we've looked at is delightfully simple, but not as rich in literal information:
 
 https://www.imdb.com/title/tt0104940/
 
-If we had a list of the web addresses we wanted, we couple make a `for` loop no problem. But how to get those addresses?
+How can we get a list of all the addresses we want without already knowing all the information needed to generate them, as we did in the previous example?
 
-If you play around with this number a few times, you'll notice that the number used in this address is a unique identifier for each movie and that the movies are generally arranged alphabetically by year of release. Like before, we could try to take advantage of what information is still included in the addresses. If you wanted to scrape all the webpages for movies released within 1990 and 1993, for example, you would simply need to find the first ID number for 1990 and the last ID for 1993; then write a simple `for` loop to `paste` together each address where the ID number is the initial ID number + the loop control variable.
+If you were to play around with this number a few times, you'd notice that the number used in this address is a unique identifier for each movie and that the movies are generally arranged alphabetically by year of release. Like before, we could try to take advantage of what information is still included in the addresses. If you wanted to scrape all the webpages for movies released within 1990 and 1993, for example, you would simply need to find the first ID number for 1990 and the last ID for 1993; then write a simple `for` loop to `paste` together each address where the ID number is the initial ID number + the loop control variable.
 
 What if you weren't interested in the default, in this case chronological, organizational principle? Websites are meant to be easily traversible: this is the premise of linked data. As such, websites often contain directory pages that put the links to many other pages in one convient place.
 
 IMDB has a number of pages where they list movies according to pre-determined categories, such as [top-rated movies](https://www.imdb.com/chart/top), [Oscar winners](https://www.imdb.com/search/title?count=100&groups=oscar_best_picture_winners), and [the current top box office](https://www.imdb.com/chart/boxoffice). These pages can all be scraped - for their links.
+
+There's just one thing we'll have to change from our usual scraping code in order to scrape links, or `<a>` HTML tags. The content enclosed in an `<a>` tag is actually the text of the link that users see rather than the actual web address, which is technically an attribute defined within the `<a>` tag: the `href` ("hypertext reference") attribute. For example:
+```
+<a href="https://google.com">Google</a>
+```
+This also means that `html_text` would return only the text of the link as it appears to us (e.g., the name of each movie); `html_attr` will give us the attribute, the address itself. Along with `html_table`, which we've already used, these constitute the three main functions for converting HTML in the `rvest` package. Aside from these two changes, it's business as usual.
 ```{r}
 directory <- read_html("https://www.imdb.com/chart/top")
 
@@ -367,11 +373,7 @@ So we just need a `for` loop that changes one number in the web address each tim
 
 Since the number must be the next multiple of 50 plus 1 (51, 101, etc.), we'll want to multiply the loop control variable by 50 and add 1: `j*50+1`. But in fact this would cause us to skip over the first page of the list, which of course begins with #1 and not #51. So we'll want to subtract 1 before anything else; this will make the result of multiplication 0 when j=1, which leaves us with 1 after the final addition of 1. This yields the formula `((j-1)*50)+1`.
 
-There's just one thing we'll have to change from our usual scraping code. The text of the `<a>` HTML tag is actually the text of the link that users see rather than the actual address, which is technically an attribute defined within the `<a>` tag by `href`. For example:
-```
-<a href="https://google.com">Google</a>
-```
-`html_text` would return only the name of each movie (which is what the link looks like to us); `html_attr` will give us the attribute, the address itself. Along with `html_table`, which we've already used, these constitute the three main functions for converting HTML in the `rvest` package we've been relying on. With these two changes (and re-initializing our results vector), we're ready to go with our first basic automated scrape.
+With this formula in a `paste` function and the scraping code we just used, we're ready to go with our first basic automated scrape.
 ```{r}
 all_urls <- c()
 
@@ -386,7 +388,7 @@ for (j in 1:50) {
 }
 ```
 
-This will take about a minute to run. (Now, these pages are quite information-rich: they contain names, ratings, major actors, duration, additional genres, and more for each movie - by clicking "US Box Office" we can even add that information too. But for the purposes of illustration, we'll pretend otherwise.)
+This should only take a few seconds to run. (Now, these pages are quite information-rich: they contain names, ratings, major actors, duration, additional genres, and more for each movie - by clicking "US Box Office" we can even add that information too. But for the purposes of illustration, we'll pretend otherwise.)
 
 Once the loop completes, check what the results look like by indexing just the first ten elements of `all_urls` in the console. In total, the vector contains 2500 elements: the 50 addresses scraped from each of the 50 pages we've scraped.
 
@@ -403,7 +405,7 @@ for (j in 1:10) {
 }
 ```
 
-This `for` loop does its job well, and look how succinct it is! But we already know from earlier that the results will be a bit messy. Why not tidy them up inside the loop each time? Recall that when we tidied `meta` for a single movie earlier we ended up with a vector of 5 elements. Since this time our results will be for 100 movies, we want our results to look like a data frame, or spreadsheet: each movie vector should be a row and each element should be a column. So this time we'll initialize a results data frame instead of a results vector.
+This `for` loop does its job well, and look how succinct it is! But we already know from earlier that the results will be a bit messy. Why not tidy them up inside the loop each time? Recall that when we tidied `meta` for a single movie earlier we ended up with a vector of 5 elements. Since this time there are ten movies, we want our results to look like a data frame, or spreadsheet: each movie vector should be transformed into a row and each element a column. So this time we'll initialize a results data frame instead of a results vector.
 
 I've simply copied and pasted into our loop the same lines of code we used to tidy up `meta` before. The last couple lines simply build the data frame: first naming each column of the data frame and specifying which element of the vector belongs to each and then combining the data frame `meta_frame` containing the results of a single pass through the loop with all of the `results` from all passes through the loop thus far.
 ```{r}
@@ -476,7 +478,7 @@ To conclude, let's review and distill some of strategies that we've deployed ove
   The same information may appear on multiple different kinds of pages across a site: some pages might be easier to scrape than others, and some might contain more of the information you're looking for in a single place. Get to know the website before you scrape.
 
 
-Finally, we would really appreciate it if you took a minute to [fill out our brief feedback survey](bit.ly/2019_dh-feedback).
+Finally, we would really appreciate it if you took a minute to [fill out our brief feedback survey](https://rutgers.ca1.qualtrics.com/jfe/form/SV_38eKD4KcjGnGR5r).
 
 If you'd like to look at this workshop in more detail or run the code yourself, visit https://github.com/azleslie/WebscrapeTechniques.
 

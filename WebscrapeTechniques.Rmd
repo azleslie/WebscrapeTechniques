@@ -269,7 +269,7 @@ cast <- separate_rows(cast, X4, sep="/")
 
 Click on `cast` again in the environment; much better. We'd still want to clear out those extra spaces, but we already know how to do that.
 
-There's a lot more we could do to prepare this data frame for future analysis: rename the blank columns, change the column names, etc. This, however, goes into another topic; if you're interested in learning more, check out my [Data 101 workshop](https://github.com/azleslie/Data101).
+There's a lot more we could do to prepare this data frame for future analysis: remove the blank columns, change the column names, etc. This, however, goes into another topic; if you're interested in learning more, check out my [Data 101 workshop](https://github.com/azleslie/Data101).
 
 ## Preparing to Scrape Multiple Pages
 
@@ -390,9 +390,9 @@ for (j in 1:50) {
 
 This should only take a few seconds to run. (Now, these pages are quite information-rich: they contain names, ratings, major actors, duration, additional genres, and more for each movie - by clicking "US Box Office" we can even add that information too. But for the purposes of illustration, we'll pretend otherwise.)
 
-Once the loop completes, check what the results look like by indexing just the first ten elements of `all_urls` in the console. In total, the vector contains 2500 elements: the 50 addresses scraped from each of the 50 pages we've scraped.
+Once the loop completes, check what the results look like by indexing just the first ten elements of `all_urls` in the console. In total, the vector contains 2500 elements: the 50 addresses scraped from each of the 50 pages, each corresponding to a single webpage for a single movie.
 
-Well, not quite. These aren't complete addresses yet: IMDB has left off the "imdb.com" at the beginning of each because it knows they're in the same part of the same larger website. This too is common. So we'll need to `paste` that extra information on to the front of each element in `all_urls` before we scrape. Each of these addresses is the webpage for a single movie. We've already spent some time looking at one of these movie pages, so let's scrape something we're already familiar with: the single line of metadata found underneath each title at the top of the page.
+Well, not quite. These aren't complete addresses yet: IMDB has left off the "imdb.com" at the beginning of each because it knows they're part of the same larger website. This too is common. So we'll need to `paste` that extra information on to the front of each element in `all_urls` before we scrape. We've already spent some time looking at one of these movie pages, so let's scrape something we're already familiar with: the single line of metadata found underneath each title at the top of the page.
 ```{r}
 all_meta <- c()
 

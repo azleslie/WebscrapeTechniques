@@ -520,7 +520,8 @@ R will kindly report back. A 200 [https://www.iana.org/assignments/http-status-c
 
 At this point scraping-as-usual can commence--with one caveat. Instead of the `read_html` function, you must use the `jump_to` function whenever scraping password-protected webpages in order to specify that this action should take place in the particular session for which you've entered credentials. From here, however, the scraping code looks just as it would were the webpage not password-protected.
 ```{r}
-page <- jump_to(session,"https://www.cavesofnarshe.com/forums/ipb/index.php?showforum=21")
+page <- jump_to(session,
+                "https://www.cavesofnarshe.com/forums/ipb/index.php?showforum=21")
 
 thread_names <- page %>% 
   html_nodes("form td > strong a") %>%

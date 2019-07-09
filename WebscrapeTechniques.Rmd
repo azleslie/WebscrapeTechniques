@@ -516,7 +516,7 @@ Finally, we'll use `submit_form` to submit these credentials in our ongoing sess
 submit_form(session, credentials)
 ```
 
-R will kindly report back. A 200 [https://www.iana.org/assignments/http-status-codes/http-status-codes.xhtml](status code) is a nice sign, but here it simply means that the form submission didn't encounter any errors: not that the credentials were necessarily accepted. To find that out, we'll run a basic scrape.
+R will kindly report back. A 200 [status code](https://www.iana.org/assignments/http-status-codes/http-status-codes.xhtml) is a nice sign, but here it simply means that the form submission didn't encounter any errors: not that the credentials were necessarily accepted. To find that out, we'll run a basic scrape.
 
 At this point scraping-as-usual can commence--with one caveat. Instead of the `read_html` function, you must use the `jump_to` function whenever scraping password-protected webpages in order to specify that this action should take place in the particular session for which you've entered credentials. From here, however, the scraping code looks just as it would were the webpage not password-protected.
 ```{r}

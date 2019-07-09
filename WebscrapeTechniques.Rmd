@@ -485,6 +485,49 @@ If you'd like to look at this workshop in more detail or run the code yourself, 
 Thanks for participating!
 
 
+## Appendix: Scraping Password Protected Websites
+
+What if the information you want to scrape requires a log-in? Even if you're logged on to a website in an active browser (or if your browser has saved your credentials), R won't be. Thankfully, the `rvest` package we've been using is capable of submitting credentials, so that you can still scrape webpages to which you have access.
+
+Start off with the link to the webpage with the log-in fields. Rather than `read_html`, use the `html_session` function to begin simulating a browser session, which we will name accordingly.
+```{r}
+session <- html_session("https://www.cavesofnarshe.com/forums")
+```
+
+Now to locate the forms in the html document and identify the proper syntax for filling them out; this requires another new yet aptly-named function, `html_form`.
+```{r}
+html_form(session)
+```
+
+It looks like there are two options here for user forms. The first is clearly labeled as a poll, so we can pass over it. The second, on the other hand, is what typical log-in fields will look like. We'll save the second into memory.
+```{r}
+form <- html_form(session)[[2]]
+```
+
+The initial `html_form` call told us what fields need to be supplied and the exact names by which to refer to them; with this information, we'll fill out the form using the `set_values` function. Note that the object in memory containing the form should come first in `set_values`, followed by each field, an equal sign, and your credential in quotation marks (if an additional field was required, such as a second password, you'd simply list it next).
+```{r}
+credentials <- set_values(form, 
+                          `UserName` = "_your_name_",
+                          `PassWord` = "_your_password_")
+```
+
+Finally, we'll use `submit_form` to submit these credentials in our ongoing session.
+```{r}
+submit_form(session, credentials)
+```
+
+If there were multiple possible "input submit" fields (it this example there is only one, a null character `''`), it would be necessary to pass a third value to this function: `submit = "form_submit_name"`. In this case and most others, this specification isn't necessary.
+
+At this point scraping-as-usual can commence--with one caveat. Instead of the `read_html` function, you must use the `jump_to` function whenever scraping password-protected webpages in order to specify that this action should take place in the particular session for which you've entered credentials. From here, however, the scraping code looks just as it would were the webpage not password-protected.
+```{r}
+page <- jump_to(session, "https://www.cavesofnarshe.com/forums/ipb/index.php?showforum=21")
+
+thread_names <- page %>% 
+  html_nodes("form td > strong a") %>%
+  html_text()
+```
+
+Continue to use `jump_to` with your session, as here, whenever scraping multiple webpages on the same site. Other than this function swap, however, your loop(s) should look much like the ones earlier in this workshop.
 
 
 

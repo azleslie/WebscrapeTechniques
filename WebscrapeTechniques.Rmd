@@ -533,7 +533,47 @@ thread_names <- page %>%
 
 Continue to use `jump_to` with your session, as here, whenever scraping multiple webpages on the same site. Other than this function swap, however, your loop(s) should look much like the ones earlier in this workshop.
 
+You should be extremely discerning, however, when evaluating whether or not to scrape password protected websites. On this note, consult the following appendix.
 
+## Appendix: Webscraping Ethics
+
+The ethicality of webscraping can require some thought depending on the material being scraped. Recent court cases have upheld the legality of collecting public information.[^7] Yet there aren't many clear-cut rules, and humanities scholars are still very much involved in discussing the ethical repricussions of these new technological possibilities for research beyond what is simply protected by law. As such, what follows are provisional considerations and suggestions for evaluating when scraping may or may not be appropriate.
+
+The exercises in this workshop have been good examples of worry-free scraping where permission is not necessary. We can summarize the major reasons why:
+
+- Sites designed for public use / access
+- Impersonal content / public knowledge
+- Historical material / in public domain
+
+These basic principles cover most of the digitized content of interest for many humanities subfields; if you can check one of these boxes, you are probably in the clear.
+
+This workshop has been purely instructional, but the point of scraping is usually to put the data to use. Publishing, presenting, or otherwise diseminating the knowledge produced requires some additional consideration. Usage should be:
+
+- Educational and non-commercial
+- Shared (public in, public out)
+- Properly cited or credited
+- Aggregated and/or anonymized where personal details arise as circumstances dictate
+
+If you're still unsure about the status of the content you'd like to scrape or its intended outcome, there are a few additional precautions worth taking - especially if you're using a password to access the content in question.
+
+- Consult the website you want to scrape for any terms of service or statement on the matter.
+- Inquire with site administrators about the possibility of scraping and any conditions they may wish to impose. When in doubt, always ask.
+- Check for existing work on the particular site or material and contact its author(s).
+
+Scraping contemporary content of existing communities raises important further issues. The [*Documenting the Now*](https://www.docnow.io/) project, one of the most thoughtful groups considering the ethics of digital archiving and research, has published a [whitepaper on documenting social media and online activism](https://www.docnow.io/docs/docnow-whitepaper-2018.pdf) that serves as a useful introduction. In addition to some of the points above, they emphasize that researchers should "engage and work with the communities they wish to document" and "go beyond what can be collected without permission from the web."
+
+In all instances but here especially, web scraping should do no harm. This might entail case-specific precautions, such as adding an additional time delay before sharing potentially-sensitive material.
+
+Even if you're completely in the clear to scrape, it's important to mind how much extra traffic you're putting on a website: too many requests can bring the site's performance down to a trickle for conventional users. (Some websites will throttle or block the IP address you're scraping from.) This is especially a concern for small websites with less server strength. If you need to scrape a large number of pages, it's always best to:
+
+- Scrape during off-peak traffic (depending on the nature of the site in question, this may be either morning or evening)
+- Add a small time delay in the loop conducting the scrape, so that your requests aren't constant. Doing so only takes a single line of code with the `Sys.sleep` function, and it will actually save you time in the long run.
+    ```{r}
+    Sys.sleep(.1)
+    ```
+  (The ideal duration of your `Sys.sleep` may vary based on the number of additional operations carried out within the scraping loop. If you find your code slows down after a certain amount of scraping, make the delay slightly longer.)
+
+This should address basic concerns. For more intricate questions, I recommend consulting discipline- or field-specific discussions.
 
 
 [^1]:There is always more than one way to skin a cat: if the second newsprint paragraph is selected before excluding the grey notice box and the first newsprint paragraph, SelectorGadget will suggest this equally-functional CSS selector instead: `#ocrdisclaimer~ p+ p`.
@@ -547,3 +587,5 @@ Continue to use `jump_to` with your session, as here, whenever scraping multiple
 [^5]:This is necessary because loops often break when they can't execute every step they've been told to. If a programmer is uncertain whether all iterations of a loop will find what it expects, they'll include an `if` statement.
 
 [^6]:Scraping HTML tables as part of an automated scrape involves an extra step. In this particular case, I would probably create a second data frame just for the cast data from all the movies. Before using `rbind` within each iteration of the loop, however, it would be necessary to add a new column to the cast data frame that simply contains the name of the movie. This way, in the resulting data frame including all the casts from all the movies, we would still know which rows belonged to which movies. It would also allow us to merge the cast data frame with the metadata data frame with the `inner_join` function.
+
+[^7]:See the important 2017 [hiQ v LinkedIn](https://arstechnica.com/tech-policy/2017/08/court-rejects-linkedin-claim-that-unauthorized-scraping-is-hacking/) case. An overview of a number of other potentially-pertinent cases can be found [in this blog post](https://benbernardblog.com/web-scraping-and-crawling-are-perfectly-legal-right/) by Ben Bernard.

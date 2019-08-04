@@ -38,6 +38,9 @@ Welcome to this introductory workshop on techniques for web scraping!
 
 Obtaining and wrangling data is often one of the most difficult parts of a digital humanities project. Even though there is an ever-growing wealth of data online, much of it isn't in tidy, single-file downloads. Instead, most is strewn across multiple webpages and structured in ways that, while visually intuitive, aren't amenable to our (or our computer's) formatting needs. This is where web scraping comes in.
 
+Web scraping is not effective, however, for collecting social media data (There are a number of reasons for this: social media platforms are often app-based, when they do have web interfaces they are often dynamic rather than static, etc.) If you're interested in social media data, you might check out my introductory workshop on
+[collecting Twitter data with TAGS](https://github.com/azleslie/TwitterData).
+
 ## Getting Started and RStudio
 
 Take a look around: you're in RStudio, an environment that makes coding in R more transparent. Let's take a brief tour. Your window is divided into four segments. In the upper right, you'll see the environment: this displays all the objects you currently have loaded into memory. In the upper left, you'll see the script editor: this is the place to work on code that you're currently writing (or borrowing from elsewhere!). To run code in code chunks (the grey chunks), you can either press Ctrl+Enter to run single lines or click the green arrow to run the entire chunk (Ctrl+Shift+Enter will do the same). In the lower left, you'll see the console: this is where code actually executes and where the output prints. In the lower right, you'll see a few different things. The "Files" tab shows whatever files live in the directory (or folder) that R is currently working in; if you run any plots, they'll show up in the "Plots" tab; you can also get help in the "Help" tab.

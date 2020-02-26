@@ -481,7 +481,7 @@ To conclude, let's review and distill some of strategies that we've deployed ove
   The same information may appear on multiple different kinds of pages across a site: some pages might be easier to scrape than others, and some might contain more of the information you're looking for in a single place. Get to know the website before you scrape.
 
 
-Finally, we would really appreciate it if you took a minute to [fill out our brief feedback survey](https://rutgers.ca1.qualtrics.com/jfe/form/SV_38eKD4KcjGnGR5r).
+Finally, we would really appreciate it if you took a minute to [fill out our brief feedback survey](https://rutgers.ca1.qualtrics.com/jfe/form/SV_5aI71iuNl7yYWIR).
 
 If you'd like to look at this workshop in more detail or run the code yourself, visit https://github.com/azleslie/WebscrapeTechniques.
 
